@@ -24,9 +24,10 @@ authRouter.post("/signup", async (req, res) => {
 // Login user
 authRouter.post("/login", async (req, res) => {
   try {
-    const { userName } = req.body;
-    const query = "Select * From Users Where userName = ?";
-    const [result] = await db.query(query, [userName]);
+    const { email, password } = req.body;
+    const query =
+      "Select * From Users Where email = ? And password_hash = ?";
+    const [result] = await db.query(query, [email, password]);
     res.status(201).json({
       status: "success",
       message: "Logged in Succesfully",
