@@ -1,9 +1,15 @@
 const express = require("express");
 const { testDatabaseConnection, db } = require("./config/database");
-
+const authRouter = require("./routes/auth");
 const app = express();
-const port = 3000;
+const port = 3004;
 
+
+app.use(express.json());
+app.use('/', authRouter);
+
+
+// If connection succes then listen to port
 testDatabaseConnection().then(() => {
   try {
     app.listen(port, () => {
@@ -18,10 +24,10 @@ testDatabaseConnection().then(() => {
 });
 
 app.get("/", async (req, res) => {
-  const query = "SELECT * FROM users";
+  const query = "SELECT * FROM Users";
   try {
     const [results] = await db.query(query);
-    res.json(results);
+    res.json(results); 
   } catch (err) {
     console.error("Error executing query:", err);
     res.status(500).send("Internal Server Error");

@@ -1,13 +1,13 @@
-const mysql = require("mysql2/promise"); // Use the promise version
+const mysql = require("mysql2/promise");
 
 const db = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "9562",
-  database: "MiniProject",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: process.env.DB_DATABASE,
+  password: process.env.DB_PASSWORD,
 });
 
-// Test the connection to the database
+// Test the connection to the database => by quering
 async function testDatabaseConnection() {
   try {
     await db.query("SELECT 1");
@@ -20,5 +20,5 @@ async function testDatabaseConnection() {
 
 module.exports = {
   testDatabaseConnection,
-  db
+  db,
 };
