@@ -36,7 +36,7 @@ authRouter.post("/login", async (req, res) => {
   } catch (error) {
     console.error(`Login Error : ${error.message}`, { stack: error.stack });
     res.status(400).json({
-      message: "Login Faile. Please try again",
+      message: "Login Failed. Please try again",
     });
   }
 });
