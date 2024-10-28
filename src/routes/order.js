@@ -49,7 +49,7 @@ orderRouter.get("/order/view", async (req, res) => {
 
     const [result] = await db.query(query, [user_id]);
     res.status(201).json({
-      result: result[0],
+      result: result,
     });
   } catch (error) {
     console.error(`Order view Error : ${error.message}`, {

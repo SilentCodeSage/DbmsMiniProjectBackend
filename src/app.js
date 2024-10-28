@@ -4,6 +4,7 @@ const authRouter = require("./routes/auth");
 const reservationRouter = require("./routes/reservation");
 const menuRouter = require("./routes/menu");
 const orderRouter = require("./routes/order");
+const feedbackRouter = require("./routes/feedback");
 const app = express();
 const port = 3004;
 
@@ -13,7 +14,7 @@ app.use('/', authRouter);
 app.use('/', reservationRouter);
 app.use('/',menuRouter);
 app.use('/',orderRouter);
-
+app.use('/',feedbackRouter);
 
 // If connection succes then listen to port
 testDatabaseConnection().then(() => {
