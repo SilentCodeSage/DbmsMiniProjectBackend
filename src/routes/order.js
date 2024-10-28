@@ -40,4 +40,25 @@ orderRouter.post("/order/place", async (req, res) => {
   }
 });
 
+// View Orders
+orderRouter.get("/order/view", async (req, res) => {
+  try {
+    const user_id = 3;
+    const query =
+      "Select order_date,status,total_amount,quantity from Orders where user_id = ?";
+
+    const [result] = await db.query(query, [user_id]);
+    res.status(201).json({
+      result: result[0],
+    });
+  } catch (error) {
+    console.error(`Order view Error : ${error.message}`, {
+      stack: error.stack,
+    });
+    res.status(400).json({
+      message: "Cannot view Orders. Please try again",
+    });
+  }
+});
+
 module.exports = orderRouter;
