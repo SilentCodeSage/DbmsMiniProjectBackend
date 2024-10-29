@@ -5,16 +5,21 @@ const reservationRouter = require("./routes/reservation");
 const menuRouter = require("./routes/menu");
 const orderRouter = require("./routes/order");
 const feedbackRouter = require("./routes/feedback");
+const cors = require('cors');
+
 const app = express();
 const port = 3004;
 
-
+app.use(cors({
+  origin:"http://localhost:5173"
+}));
 app.use(express.json());
 app.use('/', authRouter);
 app.use('/', reservationRouter);
 app.use('/',menuRouter);
 app.use('/',orderRouter);
 app.use('/',feedbackRouter);
+
 
 // If connection succes then listen to port
 testDatabaseConnection().then(() => {

@@ -8,7 +8,7 @@ authRouter.post("/signup", async (req, res) => {
     const { userName, password, email, role } = req.body;
     const query =
       "INSERT INTO Users (username, password_hash, email, role) VALUES (?, ?, ?, ?)";
-    const [result] = await db.execute(query, [userName, password, email, role]);
+    const [result] = await db.execute(query, [userName, password, email, role]); 
     res.status(201).json({
       status: "success",
       message: "User Created Succesfully",
