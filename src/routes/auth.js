@@ -2,6 +2,7 @@ const express = require("express");
 const authRouter = express.Router();
 const { db } = require("../config/database");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Signup user
 authRouter.post("/signup", async (req, res) => {
@@ -39,9 +40,16 @@ authRouter.post("/login", async (req, res) => {
       password,
       userHashedPassword[0].password_hash
     );
+
     if (!isPasswordValid) throw new Error("Invalid Credentials. Try again.");
+    const token = await jwt.sign({ _email: email }, "RES@NANDU$1029");
+    res.cookie("token", token);
+
     const query = "Select * From Users Where email = ? And password_hash = ?";
-    const [result] = await db.query(query, [email, password]);
+    const [result] = await db.query(query, [
+      email,
+      userHashedPassword[0].password_hash,
+    ]);
     res.status(201).json({
       status: "success",
       message: "Logged in Succesfully",

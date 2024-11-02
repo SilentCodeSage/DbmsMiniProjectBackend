@@ -5,21 +5,25 @@ const reservationRouter = require("./routes/reservation");
 const menuRouter = require("./routes/menu");
 const orderRouter = require("./routes/order");
 const feedbackRouter = require("./routes/feedback");
-const cors = require('cors');
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const port = 3004;
 
-app.use(cors({
-  origin:"http://localhost:5173"
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials:true
+  })
+);
 app.use(express.json());
-app.use('/', authRouter);
-app.use('/', reservationRouter);
-app.use('/',menuRouter);
-app.use('/',orderRouter);
-app.use('/',feedbackRouter);
-
+app.use(cookieParser());
+app.use("/", authRouter);
+app.use("/", reservationRouter);
+app.use("/", menuRouter);
+app.use("/", orderRouter);
+app.use("/", feedbackRouter);
 
 // If connection succes then listen to port
 testDatabaseConnection().then(() => {
@@ -39,7 +43,7 @@ app.get("/", async (req, res) => {
   const query = "SELECT * FROM Users";
   try {
     const [results] = await db.query(query);
-    res.json(results); 
+    res.json(results);
   } catch (err) {
     console.error("Error executing query:", err);
     res.status(500).send("Internal Server Error");

@@ -1,13 +1,14 @@
 const express = require("express");
 const orderRouter = express.Router();
 const { db } = require("../config/database");
+const UserAuth = require("../middlewares/UserAuth");
 
 // Place an order
-orderRouter.post("/order/place", async (req, res) => {
+orderRouter.post("/order/place",UserAuth, async (req, res) => {
   try {
-    const { User_id, Item_id, Quantity } = req.body;
+    const {  Item_id, Quantity } = req.body;
     const date = new Date();
-
+    const currentUser = req.currentUser;
     const priceOfOrderItem = await db.query(
       "select price from Menu where item_id = ?",
       [Item_id]
@@ -19,7 +20,7 @@ orderRouter.post("/order/place", async (req, res) => {
       "Insert into Orders (User_id,Order_date,Status,Total_amount,Item_id,Quantity) Values(?,?,?,?,?,?)";
 
     const [result] = await db.execute(query, [
-      User_id,
+      currentUser,
       formattedDate,
       "Order PLaced",
       totalOrderPrice,
@@ -41,9 +42,9 @@ orderRouter.post("/order/place", async (req, res) => {
 });
 
 // View Orders
-orderRouter.get("/order/view", async (req, res) => {
+orderRouter.get("/order/view",UserAuth, async (req, res) => {
   try {
-    const user_id = 3;
+    const user_id = req.currentUser;
     const query =
       "Select order_date,status,total_amount,quantity from Orders where user_id = ?";
 
