@@ -68,10 +68,10 @@ orderRouter.post("/cart/add", UserAuth, async (req, res) => {
   try {
     const user_id = req.currentUser;
 
-    const {  item_id ,quantity} = req.body;
-    console.log(user_id,item_id ,quantity)
-    const query = "Insert into cart (user_id, Item_id ,quantity) values(?,?,?)";
-    const [result] =  await db.execute(query,[user_id,item_id ,quantity]);
+    const {  name ,quantity} = req.body;
+    console.log(user_id ,quantity)
+    const query = "Insert into cart (user_id, name ,quantity) values(?,?,?)";
+    const [result] =  await db.execute(query,[user_id,name ,quantity]);
     res.status(201).json({
       message:"Succesfully item added to cart",
       result: result,
