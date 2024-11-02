@@ -4,9 +4,9 @@ const { db } = require("../config/database");
 const UserAuth = require("../middlewares/UserAuth");
 
 // Place an order
-orderRouter.post("/order/place",UserAuth, async (req, res) => {
+orderRouter.post("/order/place", UserAuth, async (req, res) => {
   try {
-    const {  Item_id, Quantity } = req.body;
+    const { Item_id, Quantity } = req.body;
     const date = new Date();
     const currentUser = req.currentUser;
     const priceOfOrderItem = await db.query(
@@ -42,7 +42,7 @@ orderRouter.post("/order/place",UserAuth, async (req, res) => {
 });
 
 // View Orders
-orderRouter.get("/order/view",UserAuth, async (req, res) => {
+orderRouter.get("/order/view", UserAuth, async (req, res) => {
   try {
     const user_id = req.currentUser;
     const query =
@@ -58,6 +58,30 @@ orderRouter.get("/order/view",UserAuth, async (req, res) => {
     });
     res.status(400).json({
       message: "Cannot view Orders. Please try again",
+    });
+  }
+});
+
+// Add to cart
+
+orderRouter.post("/cart/add", UserAuth, async (req, res) => {
+  try {
+    const user_id = req.currentUser;
+
+    const {  item_id ,quantity} = req.body;
+    console.log(user_id,item_id ,quantity)
+    const query = "Insert into cart (user_id, Item_id ,quantity) values(?,?,?)";
+    const [result] =  await db.execute(query,[user_id,item_id ,quantity]);
+    res.status(201).json({
+      message:"Succesfully item added to cart",
+      result: result,
+    });
+  } catch (error) {
+    console.error(`Adding item to Cart Error : ${error.message}`, {
+      stack: error.stack,
+    });
+    res.status(400).json({
+      message: "Cannot Add to  Cart. Please try again",
     });
   }
 });
