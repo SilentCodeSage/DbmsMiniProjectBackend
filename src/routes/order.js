@@ -6,26 +6,27 @@ const UserAuth = require("../middlewares/UserAuth");
 // Place an order
 orderRouter.post("/order/place", UserAuth, async (req, res) => {
   try {
-    const { Item_id, Quantity } = req.body;
+    const { item_name, quantity,table_number } = req.body;
     const date = new Date();
     const currentUser = req.currentUser;
     const priceOfOrderItem = await db.query(
-      "select price from Menu where item_id = ?",
-      [Item_id]
+      "select price from Menu where name = ?",
+      [item_name]
     );
-    const totalOrderPrice = Quantity * priceOfOrderItem[0][0].price;
+    const totalOrderPrice = quantity * priceOfOrderItem[0][0].price;
     const formattedDate = new Date(date).toISOString().split("T")[0];
 
     const query =
-      "Insert into Orders (User_id,Order_date,Status,Total_amount,Item_id,Quantity) Values(?,?,?,?,?,?)";
+      "Insert into Orders (user_id,Order_date,Status,total_amount,quantity,table_number,item_name) Values(?,?,?,?,?,?,?)";
 
     const [result] = await db.execute(query, [
       currentUser,
       formattedDate,
       "Order PLaced",
       totalOrderPrice,
-      Item_id,
-      Quantity,
+      quantity,
+      table_number,
+      item_name,
     ]);
 
     res.status(201).json({
@@ -68,12 +69,13 @@ orderRouter.post("/cart/add", UserAuth, async (req, res) => {
   try {
     const user_id = req.currentUser;
 
-    const {  name ,quantity} = req.body;
-    console.log(user_id ,quantity)
-    const query = "Insert into cart (user_id, name ,quantity) values(?,?,?)";
-    const [result] =  await db.execute(query,[user_id,name ,quantity]);
+    const { name, quantity, price } = req.body;
+    console.log(user_id, quantity, price);
+    const query =
+      "Insert into cart (user_id, name ,quantity,price) values(?,?,?,?)";
+    const [result] = await db.execute(query, [user_id, name, quantity, price]);
     res.status(201).json({
-      message:"Succesfully item added to cart",
+      message: "Succesfully item added to cart",
       result: result,
     });
   } catch (error) {
@@ -82,6 +84,28 @@ orderRouter.post("/cart/add", UserAuth, async (req, res) => {
     });
     res.status(400).json({
       message: "Cannot Add to  Cart. Please try again",
+    });
+  }
+});
+
+//view Cart
+
+orderRouter.get("/cart/view", UserAuth, async (req, res) => {
+  try {
+    const user_id = req.currentUser;
+
+    // Query to select all items from the cart for the current user
+    const query = "SELECT * FROM cart WHERE user_id = ?";
+    const [results] = await db.execute(query, [user_id]);
+
+    // Send the retrieved cart items back in the response
+    res.status(200).json(results);
+  } catch (error) {
+    console.error(`Fetching Cart Items Error: ${error.message}`, {
+      stack: error.stack,
+    });
+    res.status(500).json({
+      message: "Cannot fetch cart items. Please try again later.",
     });
   }
 });
