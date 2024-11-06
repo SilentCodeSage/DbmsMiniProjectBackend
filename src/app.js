@@ -7,6 +7,7 @@ const orderRouter = require("./routes/order");
 const feedbackRouter = require("./routes/feedback");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const cartRouter = require("./routes/cart");
 
 const app = express();
 const port = 3004;
@@ -14,9 +15,10 @@ const port = 3004;
 app.use(
   cors({
     origin: "http://localhost:5173",
-    credentials:true
+    credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(cookieParser());
 app.use("/", authRouter);
@@ -24,6 +26,7 @@ app.use("/", reservationRouter);
 app.use("/", menuRouter);
 app.use("/", orderRouter);
 app.use("/", feedbackRouter);
+app.use("/", cartRouter);
 
 // If connection succes then listen to port
 testDatabaseConnection().then(() => {
