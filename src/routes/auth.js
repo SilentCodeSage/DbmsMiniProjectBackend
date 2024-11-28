@@ -64,7 +64,7 @@ authRouter.post("/login", async (req, res) => {
 
     // Generate a JWT token for the user
     const token = await jwt.sign({ _email: email }, "RES@NANDU$1029");
-    res.cookie("token", token, { httpOnly: true, secure: true });
+    res.cookie("token", token);
 
     // Fetch the user data to return upon successful login
     const userQuery = "SELECT * FROM Users WHERE email = ?";

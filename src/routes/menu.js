@@ -4,7 +4,7 @@ const { db } = require("../config/database");
 const UserAuth = require("../middlewares/UserAuth");
 
 // View Menu items
-menuRouter.get("/menu/view",UserAuth, async (req, res) => {
+menuRouter.get("/menu/view", async (req, res) => {
   try {
     const query = "select * from Menu";
     const [result] = await db.query(query);

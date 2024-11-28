@@ -6,7 +6,7 @@ const UserAuth = require("../middlewares/UserAuth");
 // Place an order
 orderRouter.post("/order/place", UserAuth, async (req, res) => {
   try {
-    const { item_name, quantity,table_number } = req.body;
+    const { item_name, quantity, table_number } = req.body;
     const date = new Date();
     const currentUser = req.currentUser;
     const priceOfOrderItem = await db.query(
@@ -47,7 +47,7 @@ orderRouter.get("/order/view", UserAuth, async (req, res) => {
   try {
     const user_id = req.currentUser;
     const query =
-      "Select order_date,status,total_amount,quantity from Orders where user_id = ?";
+      "Select order_id,order_date,status,total_amount,quantity from Orders where user_id = ?";
 
     const [result] = await db.query(query, [user_id]);
     res.status(201).json({
@@ -64,16 +64,21 @@ orderRouter.get("/order/view", UserAuth, async (req, res) => {
 });
 
 // Add to cart
-
 orderRouter.post("/cart/add", UserAuth, async (req, res) => {
   try {
-    const user_id = req.currentUser;
+    const currentUserID = req.currentUser;
 
     const { name, quantity, price } = req.body;
-    console.log(user_id, quantity, price);
-    const query =
-      "Insert into cart (user_id, name ,quantity,price) values(?,?,?,?)";
-    const [result] = await db.execute(query, [user_id, name, quantity, price]);
+    const itemname = name;
+    const currentquantity = quantity;
+    const currentprice = price;
+
+    const [result] = await db.execute("CALL updateCart(?, ?, ?, ?)", [
+      currentUserID, // currentUserID
+      itemname, // itemname
+      currentquantity, // currentquantity
+      currentprice, // currentprice
+    ]);
     res.status(201).json({
       message: "Succesfully item added to cart",
       result: result,
@@ -106,6 +111,66 @@ orderRouter.get("/cart/view", UserAuth, async (req, res) => {
     });
     res.status(500).json({
       message: "Cannot fetch cart items. Please try again later.",
+    });
+  }
+});
+
+// cancel order
+
+orderRouter.post(
+  "/order/cancel/:userId/:orderId",
+  UserAuth,
+  async (req, res) => {
+    try {
+      const { userId, orderId } = req.params; // Extract userId and orderId from URL params
+
+      // Log the extracted values for debugging
+      console.log("userId:", userId, "orderId:", orderId);
+
+      // Proceed with the rest of the logic
+      const cancelOrderQuery =
+        "DELETE FROM Orders WHERE order_id = ? AND user_id = ?";
+      await db.execute(cancelOrderQuery, [orderId, userId]);
+
+      res.status(200).json({
+        message: "Order canceled successfully.",
+      });
+    } catch (error) {
+      console.error(`Canceling Order Error: ${error.message}`, {
+        stack: error.stack,
+      });
+      res.status(500).json({
+        message: "Cannot cancel order. Please try again later.",
+      });
+    }
+  }
+);
+
+orderRouter.get("/cart/count/:userId", UserAuth, async (req, res) => {
+  try {
+    const { userId } = req.params; // Extract only userId from URL parameters
+
+    // Query to count all items in the cart for the given user
+    const countQuery = `
+      SELECT COUNT(*) AS item_count
+      FROM cart
+      WHERE user_id = ?;
+    `;
+
+    // Execute the query with the userId
+    const [result] = await db.execute(countQuery, [userId]);
+
+    // Send the count result back in the response
+    res.status(200).json({
+      userId: userId,
+      itemCount: result[0].item_count, // The count will be in the 'item_count' column
+    });
+  } catch (error) {
+    console.error(`Error fetching item count: ${error.message}`, {
+      stack: error.stack,
+    });
+    res.status(500).json({
+      message: "Cannot fetch item count. Please try again later.",
     });
   }
 });

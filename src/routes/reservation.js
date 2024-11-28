@@ -31,7 +31,6 @@ reservationRouter.get("/reserve/all", UserAuth, async (req, res) => {
   try {
     const currentUser = req.currentUser;
 
-    // Query to get all reservation IDs for the current user
     const query = `
       SELECT reservation_id
       FROM Reservations

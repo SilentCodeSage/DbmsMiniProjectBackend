@@ -8,6 +8,7 @@ const feedbackRouter = require("./routes/feedback");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const cartRouter = require("./routes/cart");
+const userRouter = require("./routes/users");
 
 const app = express();
 const port = 3004;
@@ -27,7 +28,7 @@ app.use("/", menuRouter);
 app.use("/", orderRouter);
 app.use("/", feedbackRouter);
 app.use("/", cartRouter);
-
+app.use("/",userRouter);
 // If connection succes then listen to port
 testDatabaseConnection().then(() => {
   try {
