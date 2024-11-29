@@ -77,7 +77,3 @@ userRouter.put("/users/:email", async (req, res) => {
 
 module.exports = userRouter;
 
-// export DB_HOST=localhost
-// export DB_USER=root
-// export DB_PASSWORD=9562
-// export DB_DATABASE=MiniProject

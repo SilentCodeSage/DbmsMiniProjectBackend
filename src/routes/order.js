@@ -47,7 +47,7 @@ orderRouter.get("/order/view", UserAuth, async (req, res) => {
   try {
     const user_id = req.currentUser;
     const query =
-      "Select order_id,order_date,status,total_amount,quantity from Orders where user_id = ?";
+      "Select order_id,order_date,status,total_amount,quantity,item_name,table_number from Orders where user_id = ?";
 
     const [result] = await db.query(query, [user_id]);
     res.status(201).json({
@@ -118,19 +118,18 @@ orderRouter.get("/cart/view", UserAuth, async (req, res) => {
 // cancel order
 
 orderRouter.post(
-  "/order/cancel/:userId/:orderId",
+  "/order/cancel/:itemName",
   UserAuth,
   async (req, res) => {
     try {
-      const { userId, orderId } = req.params; // Extract userId and orderId from URL params
+      const { itemName } = req.params;
+      const userId = req.currentUser; 
 
-      // Log the extracted values for debugging
-      console.log("userId:", userId, "orderId:", orderId);
+      console.log("userId:", userId, "itemName:", itemName);
 
-      // Proceed with the rest of the logic
       const cancelOrderQuery =
-        "DELETE FROM Orders WHERE order_id = ? AND user_id = ?";
-      await db.execute(cancelOrderQuery, [orderId, userId]);
+        "DELETE FROM Orders WHERE user_id = ? AND item_name = ?";
+      await db.execute(cancelOrderQuery, [userId, itemName]);
 
       res.status(200).json({
         message: "Order canceled successfully.",
@@ -145,6 +144,7 @@ orderRouter.post(
     }
   }
 );
+
 
 orderRouter.get("/cart/count/:userId", UserAuth, async (req, res) => {
   try {
