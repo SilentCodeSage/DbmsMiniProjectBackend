@@ -63,5 +63,18 @@ reservationRouter.get("/reserve/all", UserAuth, async (req, res) => {
   }
 });
 
+// get the details from Tables
+reservationRouter.get("/tableinfo",UserAuth,async(req,res) =>{
+  try {
+    const tableType = req.query.tableType;
+    const query = "Select table_id,seating_capacity,availability,description  from Tables where availability > 0 and description = ?";
+    const result = await db.execute(query,[tableType]);
+    console.log(result);
+    res.send(result[0]);
+  } catch (error) {
+    
+  }
+})
+
 
 module.exports = reservationRouter;
