@@ -11,7 +11,7 @@ const cartRouter = require("./routes/cart");
 const userRouter = require("./routes/users");
 
 const app = express();
-const port = 3004;
+const port = process.env.PORT || 3004;
 
 app.use(
   cors({

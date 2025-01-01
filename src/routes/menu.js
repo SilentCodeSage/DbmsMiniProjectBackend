@@ -4,12 +4,13 @@ const { db } = require("../config/database");
 const UserAuth = require("../middlewares/UserAuth");
 
 // View Menu items
-menuRouter.get("/menu/view", async (req, res) => {
+menuRouter.get("/menu/view/:offset", async (req, res) => {
   try {
-    const query = "select * from Menu";
-    const [result] = await db.query(query);
-    console.log(req.currentUser);
-    console.log(result);
+    let offset = req.params.offset
+     offset = parseInt(req.params.offset, 10);
+     console.log(offset)
+    const query = "select * from Menu limit 10 offset ?";
+    const [result] = await db.query(query,[offset]);
     result.length > 0 && res.status(201).json(result);
   } catch (error) {
     console.error(`Menu View Error : ${error.message}`, {

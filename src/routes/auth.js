@@ -40,8 +40,11 @@ authRouter.post("/login", async (req, res) => {
       });
     }
     // Fetch the hashed password from the database
-    const findPasswordQuery = "SELECT password_hash FROM Users WHERE email = ?";
+    const findPasswordQuery = "SELECT password_hash,user_id FROM Users WHERE email = ?";
     const [userHashedPassword] = await db.query(findPasswordQuery, [email]);
+    const {user_id} = userHashedPassword[0];
+
+    console.log(userHashedPassword[0])
 
     // Check if the user exists
     if (userHashedPassword.length === 0) {
@@ -63,7 +66,7 @@ authRouter.post("/login", async (req, res) => {
     }
 
     // Generate a JWT token for the user
-    const token = await jwt.sign({ _email: email }, "RES@NANDU$1029");
+    const token = await jwt.sign({ _email: email,_id:user_id }, "RES@NANDU$1029");
     res.cookie("token", token);
 
     // Fetch the user data to return upon successful login
@@ -84,6 +87,7 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
+// Logout.
 authRouter.post("/logout", (req, res) => {
   try {
     // Clear the cookie by setting its maxAge to 0
