@@ -67,8 +67,10 @@ reservationRouter.get("/reserve/all", UserAuth, async (req, res) => {
 reservationRouter.get("/tableinfo",UserAuth,async(req,res) =>{
   try {
     const tableType = req.query.tableType;
-    const query = "Select table_id,seating_capacity,availability,description  from Tables where availability > 0 and description = ?";
-    const result = await db.execute(query,[tableType]);
+    const seating_capacity = req.query.seating_capacity;
+    const query = "Select table_id,seating_capacity,availability,description  from Tables where availability > 0 and description = ? and seating_capacity = ?";
+    const result = await db.execute(query, [tableType, seating_capacity]);
+
     console.log(result);
     res.send(result[0]);
   } catch (error) {
